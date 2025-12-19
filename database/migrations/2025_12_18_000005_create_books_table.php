@@ -16,7 +16,7 @@ return new class extends Migration
             $table->jsonb('authors');
             $table->string('title');
             $table->jsonb('genres');
-            $table->string('description');
+            $table->text('description');
             $table->integer('edition')->nullable();
             $table->foreignId('publisher_id')->constrained()->restrictOnDelete();
             $table->date('published_at');

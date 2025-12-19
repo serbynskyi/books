@@ -26,9 +26,7 @@ class BookService
 
             $authorsPayload = [];
             foreach ($data['authors'] as $authorData) {
-                $author = Author::firstOrCreate(
-                    ['author' => $authorData['author']]
-                );
+                $author = Author::firstOrCreate(['author' => $authorData]);
                 $authorsPayload[] = [
                     'id' => $author->id,
                     'author' => $author->author,
@@ -37,29 +35,23 @@ class BookService
 
             $genresPayload = [];
             foreach ($data['genres'] as $genreData) {
-                $genre = Genre::firstOrCreate(
-                    ['genre' => $genreData['genre']]
-                );
+                $genre = Genre::firstOrCreate(['genre' => $genreData]);
                 $genresPayload[] = [
                     'id' => $genre->id,
                     'genre' => $genre->genre,
                 ];
             }
 
-            $publisher = Publisher::firstOrCreate([
-                'publisher' => $data['publisher'],
-            ]);
+            $publisher = Publisher::firstOrCreate(['publisher' => $data['publisher']]);
 
-            $country = Country::firstOrCreate([
-                'country' => $data['country'],
-            ]);
+            $country = Country::firstOrCreate(['country' => $data['country']]);
 
             return Book::create([
                 'authors' => $authorsPayload,
                 'title' => $data['title'],
                 'genres' => $genresPayload,
                 'description' => $data['description'],
-                'edition' => $data['edition'] ?? null,
+                'edition' => !empty($data['edition']) ? $data['edition'] : null,
                 'publisher_id' => $publisher->id,
                 'published_at' => $data['published_at'],
                 'format' => $data['format'],
@@ -78,9 +70,7 @@ class BookService
             if (isset($data['authors'])) {
                 $authorsPayload = [];
                 foreach ($data['authors'] as $authorData) {
-                    $author = Author::firstOrCreate(
-                        ['author' => $authorData['author']]
-                    );
+                    $author = Author::firstOrCreate(['author' => $authorData]);
                     $authorsPayload[] = [
                         'id' => $author->id,
                         'author' => $author->author,
@@ -93,9 +83,7 @@ class BookService
             if (isset($data['genres'])) {
                 $genresPayload = [];
                 foreach ($data['genres'] as $genreData) {
-                    $genre = Genre::firstOrCreate(
-                        ['genre' => $genreData['genre']]
-                    );
+                    $genre = Genre::firstOrCreate(['genre' => $genreData]);
                     $genresPayload[] = [
                         'id' => $genre->id,
                         'genre' => $genre->genre,
@@ -106,17 +94,13 @@ class BookService
             }
 
             if (isset($data['publisher'])) {
-                $publisher = Publisher::firstOrCreate([
-                    'publisher' => $data['publisher'],
-                ]);
+                $publisher = Publisher::firstOrCreate(['publisher' => $data['publisher']]);
                 $book->publisher_id = $publisher->id;
                 unset($data['publisher']);
             }
 
             if (isset($data['country'])) {
-                $country = Country::firstOrCreate([
-                    'country' => $data['country'],
-                ]);
+                $country = Country::firstOrCreate(['country' => $data['country']]);
                 $book->country_id = $country->id;
                 unset($data['country']);
             }
@@ -126,14 +110,5 @@ class BookService
 
             return $book;
         });
-    }
-
-    public function createOrUpdateByIsbn(array $data): Book
-    {
-        $book = Book::where('isbn', $data['isbn'])->first();
-
-        return $book
-            ? $this->update($book, $data)
-            : $this->create($data);
     }
 }

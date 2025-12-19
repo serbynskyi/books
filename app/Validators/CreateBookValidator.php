@@ -11,11 +11,11 @@ class CreateBookValidator
     {
         $validator = Validator::make($data, [
             'authors' => ['required', 'array', 'min:1'],
-            'authors.*.author' => ['required', 'string', 'max:255'],
+            'authors.*' => ['required', 'string', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
             'genres' => ['required', 'array', 'min:1'],
-            'genres.*.genre' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string', 'max:255'],
+            'genres.*' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
             'edition' => ['nullable', 'integer'],
             'publisher' => ['required', 'string', 'max:255'],
             'published_at' => ['required', 'date'],

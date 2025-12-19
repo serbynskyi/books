@@ -11,11 +11,11 @@ class UpdateBookValidator
     {
         $validator = Validator::make($data, [
             'authors' => ['array', 'min:1'],
-            'authors.*.author' => ['string', 'max:255'],
+            'authors.*' => ['string', 'max:255'],
             'title' => ['string', 'max:255'],
             'genres' => ['array', 'min:1'],
-            'genres.*.genre' => ['string', 'max:255'],
-            'description' => ['string', 'max:255'],
+            'genres.*' => ['string', 'max:255'],
+            'description' => ['string'],
             'edition' => ['nullable', 'integer'],
             'publisher' => ['string', 'max:255'],
             'published_at' => ['date'],
