@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('books', function (Blueprint $table) {
             $table->id();
-            $table->jsonb('authors');
             $table->string('title');
-            $table->jsonb('genres');
             $table->text('description');
             $table->integer('edition')->nullable();
             $table->foreignId('publisher_id')->constrained()->restrictOnDelete();

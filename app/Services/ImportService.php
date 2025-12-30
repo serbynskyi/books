@@ -2,8 +2,16 @@
 
 namespace App\Services;
 
+use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\UpdateBookRequest;
+use App\Models\Author;
 use App\Models\Book;
+use App\Models\Country;
+use App\Models\Genre;
+use App\Models\Publisher;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use SplFileObject;
 
 class ImportService
@@ -37,11 +45,19 @@ class ImportService
             }
 
             try {
-                $data = $this->mapRowToData($row);
+                $rowData = $this->mapRowToData($row);
 
-                $book = Book::where('isbn', $data['isbn'])->first();
+                $this->validate($rowData, ['isbn' => ['required', 'string', 'max:50']]);
 
-                $book ? $this->bookService->update($book, $data) : $this->bookService->create($data);
+                $book = Book::where('isbn', $rowData['isbn'])->first();
+
+                if ($book) {
+                    $this->validate($rowData, (new UpdateBookRequest())->rules());
+                    $this->bookService->update($book, $rowData);
+                } else {
+                    $this->validate($rowData, (new StoreBookRequest())->rules());
+                    $this->bookService->create($rowData);
+                }
 
                 $result['imported']++;
             } catch (\Throwable $e) {
@@ -56,25 +72,66 @@ class ImportService
         return $result;
     }
 
+    private function isEmptyRow(array $row): bool
+    {
+        return $row === [null];
+    }
+
     private function mapRowToData(array $row): array
     {
         return [
-            'authors' => explode(';', $row[0]),
+            'author_ids' => $this->resolveAuthorIds(explode(';', $row[0])),
             'title' => trim($row[1]),
-            'genres' => explode(';', $row[2]),
+            'genre_ids' => $this->resolveGenreIds(explode(';', $row[2])),
             'description' => trim($row[3]),
             'edition' => $row[4] ?? null,
-            'publisher' => trim($row[5]),
+            'publisher_id' => $this->resolvePublisherId(trim($row[5])),
             'published_at' => trim($row[6]),
             'format' => trim($row[7]),
             'pages' => $row[8],
-            'country' => trim($row[9]),
+            'country_id' => $this->resolveCountryId(trim($row[9])),
             'isbn' => trim($row[10]),
         ];
     }
 
-    private function isEmptyRow(array $row): bool
+    private function validate(array $rowData, array $rules): void
     {
-        return $row === [null];
+        $validator = Validator::make($rowData, $rules);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+    }
+
+    private function resolveAuthorIds(array $authors): array
+    {
+        return collect($authors)
+            ->map(fn ($author) =>
+            Author::firstOrCreate(['author' => $author])->id
+            )
+            ->toArray();
+    }
+
+    private function resolveGenreIds(array $genres): array
+    {
+        return collect($genres)
+            ->map(fn ($genre) =>
+            Genre::firstOrCreate(['genre' => $genre])->id
+            )
+            ->toArray();
+    }
+
+    private function resolvePublisherId(string $publisher): int
+    {
+        $publisher = Publisher::firstOrCreate(['publisher' => $publisher]);
+
+        return $publisher->id;
+    }
+
+    private function resolveCountryId(string $country): int
+    {
+        $country = Country::firstOrCreate(['country' => $country]);
+
+        return $country->id;
     }
 }

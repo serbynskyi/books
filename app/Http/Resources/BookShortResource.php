@@ -16,7 +16,7 @@ class BookShortResource extends JsonResource
     {
         return [
             'title' => $this->title,
-            'authors' => $this->authors,
+            'authors' => AuthorShortResource::collection($this->authors),
             'publisher' => $this->publisher->publisher,
             'published_at' => $this->published_at?->toDateString(),
         ];

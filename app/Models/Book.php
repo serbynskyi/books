@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Book extends Model
 {
     protected $fillable = [
-        'authors',
         'title',
-        'genres',
         'description',
         'edition',
         'publisher_id',
@@ -21,10 +19,18 @@ class Book extends Model
     ];
 
     protected $casts = [
-        'authors' => 'array',
-        'genres' => 'array',
         'published_at' => 'date',
     ];
+
+    public function authors()
+    {
+        return $this->belongsToMany(Author::class);
+    }
+
+    public function genres()
+    {
+        return $this->belongsToMany(Genre::class);
+    }
 
     public function publisher()
     {
