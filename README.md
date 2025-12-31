@@ -21,7 +21,8 @@ docker compose up
 
 ### 4. Виконати міграції бази даних
 ```bash
-docker compose exec books php artisan migrate
+docker compose exec books php artisan migrate --seed
+
 ```
 
 ---

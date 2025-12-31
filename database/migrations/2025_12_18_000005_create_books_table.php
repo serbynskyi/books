@@ -20,7 +20,8 @@ return new class extends Migration
             $table->date('published_at');
             $table->string('format');
             $table->integer('pages');
-            $table->foreignId('country_id')->constrained()->restrictOnDelete();
+            $table->char('country_code', 2);
+            $table->foreign('country_code')->references('code')->on('countries')->restrictOnDelete();
             $table->string('isbn')->unique();
             $table->timestamps();
         });

@@ -6,10 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Country extends Model
 {
-    protected $fillable = ['country'];
+    protected $primaryKey = 'code';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     public function books()
     {
-        return $this->hasMany(Book::class);
+        return $this->hasMany(
+            Book::class,
+            'country_code',
+            'code'
+        );
     }
 }

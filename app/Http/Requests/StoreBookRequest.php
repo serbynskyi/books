@@ -33,7 +33,7 @@ class StoreBookRequest extends FormRequest
             'published_at' => ['required', 'date'],
             'format' => ['required', 'string', 'max:255'],
             'pages' => ['required', 'integer', 'min:1'],
-            'country_id' => ['required', 'integer', 'exists:countries,id'],
+            'country_code' => ['required', 'string', 'size:2', 'exists:countries,code'],
             'isbn' => ['required', 'string', 'max:50', 'unique:books,isbn'],
         ];
     }

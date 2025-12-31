@@ -89,7 +89,7 @@ class ImportService
             'published_at' => trim($row[6]),
             'format' => trim($row[7]),
             'pages' => $row[8],
-            'country_id' => $this->resolveCountryId(trim($row[9])),
+            'country_code' => $this->resolveCountryCode(trim($row[9])),
             'isbn' => trim($row[10]),
         ];
     }
@@ -128,10 +128,16 @@ class ImportService
         return $publisher->id;
     }
 
-    private function resolveCountryId(string $country): int
+    private function resolveCountryCode(string $countryName): string
     {
-        $country = Country::firstOrCreate(['country' => $country]);
+        $country = Country::where('name', $countryName)->first();
 
-        return $country->id;
+        if (!$country) {
+            throw new \DomainException(
+                "Unknown country: {$countryName}"
+            );
+        }
+
+        return $country->code;
     }
 }

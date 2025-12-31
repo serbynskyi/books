@@ -33,7 +33,7 @@ class UpdateBookRequest extends FormRequest
             'published_at' => ['date'],
             'format' => ['string', 'max:255'],
             'pages' => ['integer', 'min:1'],
-            'country_id' => ['integer', 'exists:countries,id'],
+            'country_code' => ['string', 'size:2', 'exists:countries,code'],
             'isbn' => ['string', 'max:50', 'unique:books,isbn'],
         ];
     }

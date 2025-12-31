@@ -14,7 +14,7 @@ class Book extends Model
         'published_at',
         'format',
         'pages',
-        'country_id',
+        'country_code',
         'isbn',
     ];
 
@@ -39,6 +39,10 @@ class Book extends Model
 
     public function country()
     {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(
+            Country::class,
+            'country_code',
+            'code'
+        );
     }
 }
