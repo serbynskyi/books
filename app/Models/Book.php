@@ -49,27 +49,26 @@ class Book extends Model
 
     public function scopeSort(Builder $query, ?string $column, ?string $direction): Builder
     {
-        $sortableColumns = [
-            'id',
-            'title',
-            'description',
-            'edition',
-            'published_at',
-            'format',
-            'pages',
-            'country_code',
-            'isbn',
-            'created_at',
-        ];
-
-        if (!in_array($column, $sortableColumns, true)) {
-            $column = 'id';
+        if (!$column) {
+            return $query;
         }
 
         if (! in_array($direction, ['asc', 'desc'], true)) {
             $direction = 'asc';
         }
 
-        return $query->orderBy($column, $direction);
+        match ($column) {
+            'title' => $query->orderBy('books.title', $direction),
+            'published_at' => $query->orderBy('books.published_at', $direction),
+
+            'publisher' => $query
+                ->leftJoin('publishers', 'publishers.id', '=', 'books.publisher_id')
+                ->orderBy('publishers.publisher', $direction)
+                ->select('books.*'),
+
+            default => null,
+        };
+
+        return $query;
     }
 }
