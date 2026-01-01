@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
@@ -44,5 +45,31 @@ class Book extends Model
             'country_code',
             'code'
         );
+    }
+
+    public function scopeSort(Builder $query, ?string $column, ?string $direction): Builder
+    {
+        $sortableColumns = [
+            'id',
+            'title',
+            'description',
+            'edition',
+            'published_at',
+            'format',
+            'pages',
+            'country_code',
+            'isbn',
+            'created_at',
+        ];
+
+        if (!in_array($column, $sortableColumns, true)) {
+            $column = 'id';
+        }
+
+        if (! in_array($direction, ['asc', 'desc'], true)) {
+            $direction = 'asc';
+        }
+
+        return $query->orderBy($column, $direction);
     }
 }

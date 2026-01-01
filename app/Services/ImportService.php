@@ -52,6 +52,7 @@ class ImportService
                 $book = Book::where('isbn', $rowData['isbn'])->first();
 
                 if ($book) {
+                    unset($rowData['isbn']);
                     $this->validate($rowData, (new UpdateBookRequest())->rules());
                     $this->bookService->update($book, $rowData);
                 } else {
@@ -84,7 +85,7 @@ class ImportService
             'title' => trim($row[1]),
             'genre_ids' => $this->resolveGenreIds(explode(';', $row[2])),
             'description' => trim($row[3]),
-            'edition' => $row[4] ?? null,
+            'edition' => !empty($row[4]) ? $row[4] : null,
             'publisher_id' => $this->resolvePublisherId(trim($row[5])),
             'published_at' => trim($row[6]),
             'format' => trim($row[7]),

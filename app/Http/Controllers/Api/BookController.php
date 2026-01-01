@@ -9,13 +9,16 @@ use App\Http\Resources\BookResource;
 use App\Http\Resources\BookShortResource;
 use App\Models\Book;
 use App\Services\BookService;
+use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         return BookShortResource::collection(
-            Book::paginate()
+            Book::query()
+                ->sort($request->get('sort'), $request->get('direction'))
+                ->paginate(20)
         );
     }
 
