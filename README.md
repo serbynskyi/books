@@ -31,7 +31,7 @@ docker compose exec books php artisan migrate --seed
 
 ### GET /api/books
 ```bash
-curl --location 'http://localhost/api/books'
+curl --location 'http://localhost/api/books?search=eprehenderi&sort=published_at&direction=asc'
 ```
 
 ### GET /api/books/{book}
