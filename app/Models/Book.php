@@ -71,4 +71,26 @@ class Book extends Model
 
         return $query;
     }
+
+    public function scopeSearch(Builder $query, ?string $term): Builder
+    {
+        if (!$term) {
+            return $query;
+        }
+
+        $query->where(function ($query) use ($term) {
+            $query->where('title', 'ILIKE', "%{$term}%")
+                ->orWhere('description', 'ILIKE', "%{$term}%");
+
+            $query->orWhereHas('authors', function ($query) use ($term) {
+                $query->where('author', 'ILIKE', "%{$term}%");
+            });
+
+            $query->orWhereHas('publisher', function ($query) use ($term) {
+                $query->where('publisher', 'ILIKE', "%{$term}%");
+            });
+        });
+
+        return $query;
+    }
 }

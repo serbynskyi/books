@@ -18,6 +18,7 @@ class BookController extends Controller
         return BookShortResource::collection(
             Book::query()
                 ->sort($request->get('sort'), $request->get('direction'))
+                ->search($request->get('search'))
                 ->paginate(20)
         );
     }
